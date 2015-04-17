@@ -1,0 +1,72 @@
+<!doctype html5>
+<meta charset="utf-8">
+<style>
+    canvas {
+        border: 1px solid black;
+        background-color: black;
+    }
+</style>
+
+<script src="gaspra770.js"></script>
+<script src="sylvester.js"></script>
+<script src="model.js"></script>
+<script>
+'use strict';
+
+var hidden_canvas;
+var vertex_normals;
+var face_normals;
+
+function init() {
+    //window.setInterval(draw_model, 50);
+    window.requestAnimationFrame(draw_model);
+    hidden_canvas = document.createElement("canvas");
+    var canvas1 = document.getElementById("canvas1");
+    hidden_canvas.width = canvas1.width;
+    hidden_canvas.height = canvas1.height;
+
+    vertexes = vertexes.map($V);
+    vertex_normals = Model.get_vertex_normals(vertexes, faces);
+    face_normals = Model.get_face_normals(vertexes, faces);
+}
+
+function draw_model() {
+    var ctx, canvas;
+    window.requestAnimationFrame(draw_model);
+    var angle = (new Date()).getTime()/ 3000;
+    var rotation = [0.10 + angle, -0.11, -0.12, 0.13 - angle/2]
+    var tr_vertexes = Model.rotate_vertexes(vertexes, rotation);
+
+    if (document.getElementById("refresh1").checked) {
+        var tr_face_normals = Model.rotate_vertexes(face_normals, rotation);
+        Model.draw(hidden_canvas, tr_vertexes, faces, 0.1, [0, 0, 3], [0.5, -1, -1], tr_face_normals);
+        canvas = document.getElementById("canvas1");
+        ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(hidden_canvas, 0, 0);
+    }
+    if (document.getElementById("refresh2").checked) {
+        var tr_vertex_normals = Model.rotate_vertexes(vertex_normals, rotation);
+        Model.draw(hidden_canvas, tr_vertexes, faces, 0.1, [0, 0, 3], [0.5, -1, -1], null, tr_vertex_normals);
+        canvas = document.getElementById("canvas2");
+        ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(hidden_canvas, 0, 0);
+    }
+}
+
+</script>
+
+<body onload="js:init()">
+<h1><a href="http://en.wikipedia.org/wiki/951_Gaspra">951 Gaspra</a></h1>
+<h2>Flat shading</h2>
+<div>
+    <input type="checkbox" id="refresh1" checked name="refresh1"><label for="refresh1">refresh</label><br>
+    <canvas id="canvas1" width=400 height=400></canvas>
+</div>
+<h2>Goraud shading</h2>
+<div>
+    <input type="checkbox" id="refresh2" checked name="refresh1"><label for="refresh2">refresh</label><br>
+    <canvas id="canvas2" width=400 height=400></canvas>
+</div>
+</body>
